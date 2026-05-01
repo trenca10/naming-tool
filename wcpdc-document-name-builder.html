@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>WCPDC — Document Name Builder</title>
+<style>
+/* WCPDC theme — extracted from PG03 PPTX
+   Brand red:        #EB0A1E (Toyota corporate, used as accent)
+   Slate (PG):       #1E293B
+   Construction:     #945200 (warm brown)
+   Operations:       #0070C0 (corporate blue)
+   Relocation:       #196B24 (deep green)
+   Text primary:     #272525
+   Surface light:    #F2F2F2
+*/
+:root {
+  color-scheme: light;
+  --c-brand:       #EB0A1E;
+  --c-brand-dark:  #B30815;
+  --c-text:        #272525;
+  --c-text-muted:  #6b6b6b;
+  --c-text-soft:   #999;
+  --c-bg:          #F2F2F2;
+  --c-surface:     #FFFFFF;
+  --c-border:      #E0E0E0;
+  --c-border-soft: #ECECEC;
+  --c-construction:#945200;
+  --c-operations:  #0070C0;
+  --c-relocation:  #196B24;
+  --c-governance:  #1E293B;
+  --c-ok-bg:       #E8F1E5;
+  --c-ok-text:     #1F5723;
+  --c-ok-bd:       #B7D3B0;
+  --c-ko-bg:       #FBE9EB;
+  --c-ko-text:     #8E1620;
+  --c-ko-bd:       #E5B8BD;
+  --shadow-sm:     0 1px 2px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.03);
+  --shadow-md:     0 2px 8px rgba(0,0,0,.05), 0 1px 3px rgba(0,0,0,.04);
+  --radius:        4px;
+  --font-display: "Toyota Type Black", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-body: "Toyota Type", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Monaco", Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--c-bg);
+  color: var(--c-text);
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1140px; margin: 0 auto; padding: 0 20px 32px; }
+
+/* ==== HEADER BAR ==== */
+.topbar {
+  background: var(--c-governance);
+  color: #fff;
+  padding: 18px 0 14px;
+  margin-bottom: 24px;
+  border-bottom: 3px solid var(--c-brand);
+}
+.topbar-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  background: var(--c-brand);
+  color: #fff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+h1 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+.brand-tag {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.65);
+  margin-top: 2px;
+}
+.lang-switch {
+  display: inline-flex;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 4px;
+  overflow: hidden;
+  background: transparent;
+  flex-shrink: 0;
+}
+.lang-switch button {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: 0.6px;
+}
+.lang-switch button.active {
+  background: var(--c-brand);
+  color: #fff;
+}
+
+.sub {
+  font-size: 12.5px;
+  color: var(--c-text-muted);
+  margin-bottom: 18px;
+  line-height: 1.55;
+}
+.sub code {
+  background: var(--c-surface);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--c-text);
+  border: 1px solid var(--c-border-soft);
+}
+
+/* ==== TABS ==== */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--c-border);
+  margin-bottom: 22px;
+}
+.tab {
+  padding: 10px 18px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--c-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  position: relative;
+  transition: color 0.15s;
+}
+.tab:hover { color: var(--c-text); }
+.tab.active { color: var(--c-text); }
+.tab.active::after {
+  content: '';
+  position: absolute;
+  left: 12px; right: 12px; bottom: -1px;
+  height: 3px;
+  background: var(--c-brand);
+}
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.18s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+/* ==== LEGEND ==== */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+  font-size: 11px;
+}
+.legend .chip {
+  padding: 5px 12px;
+  border-radius: 3px;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
+}
+.legend .chip.brown { background: var(--c-construction); border-color: var(--c-construction); }
+.legend .chip.blue  { background: var(--c-operations);   border-color: var(--c-operations); }
+.legend .chip.green { background: var(--c-relocation);   border-color: var(--c-relocation); }
+.legend .chip.grey  { background: var(--c-governance);   border-color: var(--c-governance); }
+
+/* ==== CARDS / FIELDS ==== */
+.card {
+  background: var(--c-surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--c-border);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+}
+.card + .card { margin-top: 16px; }
+.card-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-text-muted);
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--c-border-soft);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--c-text-muted);
+  font-weight: 700;
+}
+.field select, .field input {
+  padding: 9px 11px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  background: #fff;
+  font-family: var(--font-body);
+  color: var(--c-text);
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.field select:focus, .field input:focus {
+  outline: none;
+  border-color: var(--c-brand);
+  box-shadow: 0 0 0 3px rgba(235,10,30,0.12);
+}
+.field select:disabled {
+  background: #FAFAFA;
+  color: #aaa;
+  cursor: not-allowed;
+}
+.field input.invalid { border-color: var(--c-brand-dark); background: #FFF5F6; }
+.field .hint { font-size: 11px; color: var(--c-text-soft); }
+
+/* ==== PREVIEW (filename) ==== */
+.preview {
+  margin-top: 18px;
+  padding: 20px 22px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  border-left: 5px solid var(--pole-color, #ccc);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+.preview::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 4px; height: 100%;
+  background: var(--pole-color, transparent);
+  opacity: 0.15;
+}
+.preview .label-row {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-text-soft);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.filename {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 600;
+  word-break: break-all;
+  color: var(--c-text);
+  line-height: 1.5;
+}
+.filename .seg {
+  padding: 3px 5px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+.filename .seg.pole    { background: rgba(235,10,30,0.10);   border-color: rgba(235,10,30,0.20); color: var(--c-brand-dark); font-weight: 700; }
+.filename .seg.docnum  { background: rgba(0,112,192,0.10);    border-color: rgba(0,112,192,0.18); color: #054C82; }
+.filename .seg.name    { background: rgba(148,82,0,0.10);     border-color: rgba(148,82,0,0.18);  color: #6B3C00; }
+.filename .seg.status  { background: rgba(25,107,36,0.12);    border-color: rgba(25,107,36,0.22); color: #135018; font-weight: 600; }
+.filename .seg.ver     { background: rgba(30,41,59,0.08);     border-color: rgba(30,41,59,0.18);  color: #1E293B; }
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--c-brand);
+  background: var(--c-brand);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  transition: all 0.12s;
+}
+.btn:hover:not(:disabled) { background: var(--c-brand-dark); border-color: var(--c-brand-dark); }
+.btn.secondary {
+  background: #fff;
+  color: var(--c-text);
+  border-color: var(--c-border);
+}
+.btn.secondary:hover:not(:disabled) { background: #FAFAFA; border-color: #BBB; color: var(--c-text); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.copied { background: var(--c-relocation); border-color: var(--c-relocation); }
+
+/* ==== DECODE CELLS ==== */
+.decode {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+}
+.decode .cell {
+  background: #FAFAFA;
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  border-left: 3px solid var(--pole-color, #DDD);
+}
+.decode .k {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  color: var(--c-text-soft);
+  letter-spacing: 0.7px;
+  font-weight: 700;
+}
+.decode .v {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text);
+  margin-top: 3px;
+  font-family: var(--font-mono);
+}
+.decode .desc { font-size: 11px; color: var(--c-text-muted); margin-top: 3px; }
+
+/* ==== HISTORY ==== */
+.history { margin-top: 22px; }
+.history h3 {
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--c-text-muted);
+  font-weight: 800;
+}
+.hist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius);
+  margin-bottom: 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.hist-item:hover {
+  background: #FAFAFA;
+  border-color: var(--c-border);
+}
+.hist-item .del {
+  font-size: 16px;
+  color: var(--c-text-soft);
+  padding: 0 6px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  line-height: 1;
+}
+.hist-item .del:hover { color: var(--c-brand); }
+
+/* ==== VALIDATOR RESULT ==== */
+.val-result {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  border-left: 4px solid;
+}
+.val-result.ok {
+  background: var(--c-ok-bg);
+  border: 1px solid var(--c-ok-bd);
+  border-left-color: var(--c-relocation);
+  color: var(--c-ok-text);
+}
+.val-result.ko {
+  background: var(--c-ko-bg);
+  border: 1px solid var(--c-ko-bd);
+  border-left-color: var(--c-brand);
+  color: var(--c-ko-text);
+}
+.val-result h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.val-result ul { margin: 4px 0 0 18px; padding: 0; }
+.val-result code {
+  background: rgba(0,0,0,0.06);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+/* ==== REFERENCE TREE ==== */
+.ref-block {
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #FAFAFA;
+  border-radius: var(--radius);
+  border-left: 3px solid var(--pole-color, #ccc);
+}
+.ref-block h4 {
+  font-family: var(--font-display);
+  font-size: 12px;
+  margin: 0 0 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--c-text);
+}
+
+footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--c-border-soft);
+  font-size: 11px;
+  color: var(--c-text-soft);
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">WC<br>PDC</div>
+      <div>
+        <h1 data-i18n="title">WCPDC — Document Name Builder</h1>
+        <div class="brand-tag">Document Management Plan · v2.5</div>
+      </div>
+    </div>
+    <div class="lang-switch">
+      <button data-lang="fr">FR</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="sub" data-i18n-html="subtitle"></div>
+
+  <div class="legend">
+    <span class="chip brown" data-i18n="legendConstruction"></span>
+    <span class="chip blue" data-i18n="legendOperations"></span>
+    <span class="chip green" data-i18n="legendRelocation"></span>
+    <span class="chip grey" data-i18n="legendGovernance"></span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="gen" data-i18n="tabGenerator"></button>
+    <button class="tab" data-tab="val" data-i18n="tabValidator"></button>
+    <button class="tab" data-tab="ref" data-i18n="tabReference"></button>
+  </div>
+
+  <!-- GENERATOR -->
+  <section id="panel-gen" class="panel active">
+    <div class="card">
+      <div class="card-title" data-i18n="cardComposeTitle">Composition du nom</div>
+      <div class="grid">
+        <div class="field">
+          <label data-i18n="fieldPole"></label>
+          <select id="g-pole"></select>
+          <span class="hint" data-i18n="hintPole"></span>
+        </div>
+        <div class="field">
+          <label data-i18n="fieldDomain"></label>
+          <select id="g-domain" disabled></select>
+          <span class="hint" data-i18n="hintDomain"></span>
+        </div>
+        <div class="field">
+          <label data-i18n="fieldSub"></label>
+          <select id="g-sub" disabled></select>
+          <span class="hint" data-i18n="hintSub"></span>
+        </div>
+        <div class="field">
+          <label data-i18n-html="fieldDocNum"></label>
+          <input id="g-docnum" type="text" maxlength="5" placeholder="31014">
+          <span class="hint" data-i18n="hintDocNum"></span>
+        </div>
+        <div class="field" style="grid-column: span 2;">
+          <label data-i18n="fieldName"></label>
+          <input id="g-name" type="text" data-i18n-attr="placeholder|placeholderName">
+          <span class="hint" data-i18n="hintName"></span>
+        </div>
+        <div class="field">
+          <label data-i18n="fieldStatus"></label>
+          <select id="g-status"></select>
+        </div>
+        <div class="field">
+          <label data-i18n="fieldVersion"></label>
+          <input id="g-version" type="text" value="1.0" placeholder="1.0">
+          <span class="hint" data-i18n="hintVersion"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview" id="g-preview-box">
+      <div class="label-row" data-i18n="previewLabel"></div>
+      <div class="filename" id="g-preview">—</div>
+      <div class="decode" id="g-decode"></div>
+      <div class="actions">
+        <button class="btn" id="g-copy" disabled data-i18n="btnCopy"></button>
+        <button class="btn secondary" id="g-save" disabled data-i18n="btnSave"></button>
+        <button class="btn secondary" id="g-reset" data-i18n="btnReset"></button>
+      </div>
+    </div>
+
+    <div class="history">
+      <h3 data-i18n="historyTitle"></h3>
+      <div id="g-history"></div>
+    </div>
+  </section>
+
+  <!-- VALIDATOR -->
+  <section id="panel-val" class="panel">
+    <div class="card">
+      <div class="card-title" data-i18n="cardValidatorTitle">Validation</div>
+      <div class="field">
+        <label data-i18n="fieldValidator"></label>
+        <input id="v-input" type="text" placeholder="AO43_[31014]_Steering-Committee-Pack_IFA_v2.5">
+      </div>
+      <div class="actions">
+        <button class="btn" id="v-check" data-i18n="btnCheck"></button>
+        <button class="btn secondary" id="v-example" data-i18n="btnExample"></button>
+      </div>
+      <div id="v-result"></div>
+    </div>
+  </section>
+
+  <!-- REFERENCE -->
+  <section id="panel-ref" class="panel">
+    <div class="card">
+      <div class="card-title" data-i18n="cardReferenceTitle">Référentiel REF</div>
+      <div class="field" style="max-width: 420px;">
+        <label data-i18n="fieldReference"></label>
+        <select id="r-pole"></select>
+      </div>
+      <div id="r-tree" style="margin-top: 18px;"></div>
+    </div>
+  </section>
+
+  <footer data-i18n="footer"></footer>
+</div>
+
+<script>
+// ============ I18N ============
+const I18N = {
+  fr: {
+    title: 'WCPDC — Générateur de noms de documents',
+    subtitle: 'Convention : <code>[XX][NN]_[#####]?_[NAME]_[STATUS]_v[X.Y]</code> · DMP v2.5 · Pas de date dans le nom (gérée en métadonnée).',
+    legendConstruction: 'AF · BF — Construction',
+    legendOperations: 'AO · BO — Operations & SAP/WMS',
+    legendRelocation: 'AR · BR — Relocation',
+    legendGovernance: 'PG — Governance',
+    tabGenerator: 'Générateur',
+    tabValidator: 'Validateur',
+    tabReference: 'Référentiel',
+    fieldPole: 'Pole',
+    hintPole: 'Préfixe 2 lettres',
+    fieldDomain: 'Domaine',
+    hintDomain: 'Groupe de sous-dossiers',
+    fieldSub: 'Sous-dossier / séquence',
+    hintSub: '2 chiffres (ou A/C + 1 pour SAP/WMS)',
+    fieldDocNum: 'N° document <span style="color:#aaa;">(optionnel, 5 chiffres)</span>',
+    hintDocNum: 'Pré-alloué par TCI PMO',
+    fieldName: 'Titre descriptif',
+    placeholderName: 'Ex : Steering Committee Pack',
+    hintName: 'Auto-converti en kebab-case (sans espaces ni caractères spéciaux)',
+    fieldStatus: 'Statut',
+    fieldVersion: 'Version',
+    hintVersion: 'Major.Minor',
+    previewLabel: 'Aperçu du nom de fichier',
+    btnCopy: 'Copier',
+    btnCopied: 'Copié ✓',
+    btnSave: "Enregistrer dans l'historique",
+    btnReset: 'Réinitialiser',
+    btnCheck: 'Vérifier',
+    btnExample: 'Exemple',
+    historyTitle: 'Historique récent (local, sur ce poste)',
+    historyEmpty: 'Aucun nom enregistré.',
+    selectPlaceholder: '— choisir —',
+    fillRequired: 'complète les champs requis…',
+    fieldValidator: 'Coller un nom de fichier (avec ou sans extension)',
+    fieldReference: "Sélectionner un pole pour voir son arborescence REF",
+    cardComposeTitle: 'Composition du nom',
+    cardValidatorTitle: 'Validation d\'un nom existant',
+    cardReferenceTitle: 'Référentiel REF',
+    footer: 'Source : PG03_Document_Management_Plan_IFR_v2.5 · Outil local, aucune donnée ne quitte ce poste.',
+    statusDescriptions: {
+      DRAFT: 'Contenu initial partagé par le créateur',
+      WIP:   'En maturation — plusieurs contributeurs, pas prêt pour relecture',
+      IFR:   'Émis pour relecture',
+      IFA:   'Émis pour approbation',
+      IFC:   'Émis pour construction',
+      AB:    'Tel-que-construit (As-Built)'
+    },
+    statusLabels: {
+      DRAFT: 'DRAFT — initial',
+      WIP:   'WIP — en maturation',
+      IFR:   'IFR — Émis pour relecture',
+      IFA:   'IFA — Émis pour approbation',
+      IFC:   'IFC — Émis pour construction',
+      AB:    'AB — Tel-que-construit'
+    },
+    decode: {
+      pole: 'Pole', subfolder: 'Sous-dossier', docnum: 'N° doc', title: 'Titre',
+      status: 'Statut', version: 'Version', domain: 'Domaine'
+    },
+    pole5digits: '5 chiffres TCI PMO',
+    valOk: '✓ Conforme',
+    valKoPattern: '✗ Non conforme au pattern',
+    valKoSemantic: '✗ Pattern correct mais incohérences sémantiques',
+    errPattern: 'Le nom ne respecte pas le pattern <code>[XX][NN]_[#####]?_NAME_STATUS_vX.Y</code>',
+    errStart: 'Doit commencer par 2 lettres majuscules (pole).',
+    errVersion: 'Version manquante ou mal formatée (ex : <code>_v2.5</code>).',
+    errStatus: 'Statut manquant ou inconnu (DRAFT/WIP/IFR/IFA/IFC/AB).',
+    errSpaces: 'Le nom contient des espaces — utiliser des tirets.',
+    errPole: pole => `Pole inconnu : <code>${pole}</code>. Valides : AF/BF/AO/BO/AR/BR/PG.`,
+    errSub: (sub, pole) => `Sous-dossier <code>${sub}</code> inconnu pour le pole <code>${pole}</code>.`,
+    poleLabel: (k, v) => `${k} — ${v.site} · ${v.labelFR}`
+  },
+  en: {
+    title: 'WCPDC — Document Name Builder',
+    subtitle: 'Convention: <code>[XX][NN]_[#####]?_[NAME]_[STATUS]_v[X.Y]</code> · DMP v2.5 · No date in filename (handled as metadata).',
+    legendConstruction: 'AF · BF — Construction',
+    legendOperations: 'AO · BO — Operations & SAP/WMS',
+    legendRelocation: 'AR · BR — Relocation',
+    legendGovernance: 'PG — Governance',
+    tabGenerator: 'Generator',
+    tabValidator: 'Validator',
+    tabReference: 'Reference',
+    fieldPole: 'Pole',
+    hintPole: '2-letter prefix',
+    fieldDomain: 'Domain',
+    hintDomain: 'Group of subfolders',
+    fieldSub: 'Subfolder / sequence',
+    hintSub: '2 digits (or A/C + 1 for SAP/WMS)',
+    fieldDocNum: 'Document number <span style="color:#aaa;">(optional, 5 digits)</span>',
+    hintDocNum: 'Pre-allocated by TCI PMO',
+    fieldName: 'Descriptive title',
+    placeholderName: 'E.g. Steering Committee Pack',
+    hintName: 'Auto-converted to kebab-case (no spaces or special characters)',
+    fieldStatus: 'Status',
+    fieldVersion: 'Version',
+    hintVersion: 'Major.Minor',
+    previewLabel: 'Filename preview',
+    btnCopy: 'Copy',
+    btnCopied: 'Copied ✓',
+    btnSave: 'Save to history',
+    btnReset: 'Reset',
+    btnCheck: 'Check',
+    btnExample: 'Example',
+    historyTitle: 'Recent history (local, this device)',
+    historyEmpty: 'No saved names.',
+    selectPlaceholder: '— choose —',
+    fillRequired: 'fill in the required fields…',
+    fieldValidator: 'Paste a filename (with or without extension)',
+    fieldReference: 'Select a pole to view its REF tree',
+    cardComposeTitle: 'Compose the name',
+    cardValidatorTitle: 'Validate an existing name',
+    cardReferenceTitle: 'REF reference tree',
+    footer: 'Source: PG03_Document_Management_Plan_IFR_v2.5 · Local tool, no data leaves this device.',
+    statusDescriptions: {
+      DRAFT: 'Initial content shared by creator',
+      WIP:   'Maturing — multiple contributors, not ready for review',
+      IFR:   'Issued For Review',
+      IFA:   'Issued For Approval',
+      IFC:   'Issued For Construction',
+      AB:    'As-Built'
+    },
+    statusLabels: {
+      DRAFT: 'DRAFT — initial',
+      WIP:   'WIP — maturing',
+      IFR:   'IFR — Issued For Review',
+      IFA:   'IFA — Issued For Approval',
+      IFC:   'IFC — Issued For Construction',
+      AB:    'AB — As-Built'
+    },
+    decode: {
+      pole: 'Pole', subfolder: 'Subfolder', docnum: 'Doc #', title: 'Title',
+      status: 'Status', version: 'Version', domain: 'Domain'
+    },
+    pole5digits: '5 digits TCI PMO',
+    valOk: '✓ Compliant',
+    valKoPattern: '✗ Pattern non-compliant',
+    valKoSemantic: '✗ Pattern OK but semantic inconsistencies',
+    errPattern: 'Name does not match the pattern <code>[XX][NN]_[#####]?_NAME_STATUS_vX.Y</code>',
+    errStart: 'Must start with 2 uppercase letters (pole).',
+    errVersion: 'Version missing or malformed (e.g. <code>_v2.5</code>).',
+    errStatus: 'Status missing or unknown (DRAFT/WIP/IFR/IFA/IFC/AB).',
+    errSpaces: 'Name contains spaces — use hyphens.',
+    errPole: pole => `Unknown pole: <code>${pole}</code>. Valid: AF/BF/AO/BO/AR/BR/PG.`,
+    errSub: (sub, pole) => `Subfolder <code>${sub}</code> unknown for pole <code>${pole}</code>.`,
+    poleLabel: (k, v) => `${k} — ${v.site} · ${v.labelEN}`
+  }
+};
+
+let LANG = localStorage.getItem('wcpdc_lang') || 'fr';
+const t = () => I18N[LANG];
+
+// ============ DATA MODEL ============
+const POLES = {
+  AF: { type: 'construction', site: 'ABPDC', labelFR: 'Construction du bâtiment', labelEN: 'Facility Construction', color: '#a06a3e' },
+  BF: { type: 'construction', site: 'BCPDC', labelFR: 'Construction du bâtiment', labelEN: 'Facility Construction', color: '#a06a3e' },
+  AO: { type: 'operations',   site: 'ABPDC', labelFR: 'Opérations & SAP/WMS', labelEN: 'Operations & SAP/WMS', color: '#1e6091' },
+  BO: { type: 'operations',   site: 'BCPDC', labelFR: 'Opérations & SAP/WMS', labelEN: 'Operations & SAP/WMS', color: '#1e6091' },
+  AR: { type: 'relocation',   site: 'ABPDC', labelFR: 'Relocalisation & emménagement', labelEN: 'Relocation & Move-in', color: '#2c5f2d' },
+  BR: { type: 'relocation',   site: 'BCPDC', labelFR: 'Relocalisation & emménagement', labelEN: 'Relocation & Move-in', color: '#2c5f2d' },
+  PG: { type: 'governance',   site: 'Cross-program', labelFR: 'Gouvernance du programme', labelEN: 'Programme Governance', color: '#555555' }
+};
+
+// Domain labels are bilingual; subfolder names are kept in English (file system standard).
+const DOMAINS = {
+  construction: {
+    fr: {
+      '0x — Gestion de projet': 'pm',
+      '1x — Contrats & Juridique': 'legal',
+      '2x — Architecture & Design': 'arch',
+      '3x — Génie civil & Structure': 'civil',
+      '4x — MEP & Systèmes techniques': 'mep',
+      '5x — IT & Réseaux': 'it',
+      '6x — Équipements entrepôt': 'whs',
+      '7x — HSE & Conformité': 'hse',
+      '8x — Site & Utilités': 'site',
+      '9x — Réception & Mise en service': 'closeout'
+    },
+    en: {
+      '0x — Project Management': 'pm',
+      '1x — Contracts & Legal': 'legal',
+      '2x — Architecture & Design': 'arch',
+      '3x — Civil & Structure': 'civil',
+      '4x — MEP & Technical Systems': 'mep',
+      '5x — IT & Networks': 'it',
+      '6x — Warehouse Equipment': 'whs',
+      '7x — HSE & Compliance': 'hse',
+      '8x — Site & Utilities': 'site',
+      '9x — Closeout & Commissioning': 'closeout'
+    },
+    subs: {
+      pm: [['01', 'Project-Charters'], ['02', 'Planning-Milestones'], ['03', 'RAID-Log'], ['04', 'Status-Reporting'], ['05', 'Budget-Tracking'], ['06', 'Coordination-and-Steering-Meetings'], ['07', 'Change-Requests']],
+      legal: [['11', 'Contracts-General'], ['12', 'Contracts-Subcontractors'], ['13', 'Warranties-Insurance']],
+      arch: [['21', 'Architecture-General'], ['22', 'Interior-Partitions'], ['23', 'Flooring-Coatings'], ['24', 'LEED-Design']],
+      civil: [['31', 'Civil-Earthworks'], ['32', 'Structure-Frame'], ['33', 'Envelope-Facade'], ['34', 'Roofing']],
+      mep: [['41', 'HVAC-Ventilation'], ['42', 'Plumbing-Sprinklers'], ['43', 'Electrical-HV-LV'], ['44', 'Lighting-Emergency'], ['45', 'Mechanical-Equipment'], ['46', 'Gas-Compressed-Air'], ['47', 'Renewable-Energy'], ['48', 'Energy-Metering']],
+      it: [['51', 'Network-Cabling'], ['52', 'Servers-Tech-Rooms'], ['53', 'WiFi-Telephony'], ['54', 'Access-Control-CCTV'], ['55', 'Automation-Controls']],
+      whs: [['61', 'Loading-Docks-Doors'], ['62', 'Racking-Mezzanine'], ['63', 'Conveyors-Fixed-Equipment'], ['64', 'Floor-Marking-Signage'], ['65', 'Weighing-Dimensioning'], ['66', 'Packaging-Equipment'], ['67', 'Charging-Stations']],
+      hse: [['71', 'HSE-Site-Safety'], ['72', 'Permits-Regulatory'], ['73', 'Environmental-ICPE'], ['74', 'Fire-Detection-Suppression'], ['75', 'Security-Perimeter'], ['76', 'LEED-Certification'], ['77', 'NetZero-Certification']],
+      site: [['81', 'Site-Earthworks-Roads'], ['82', 'Water-Wastewater'], ['83', 'Energy-Connections'], ['84', 'Exterior-Lighting'], ['85', 'Stormwater-Management'], ['86', 'EV-Charging-Infrastructure']],
+      closeout: [['91', 'Snagging-Defects'], ['92', 'As-Built'], ['93', 'Warranties-Closeout'], ['94', 'Materials-Specifications'], ['95', 'Waste-Management'], ['96', 'Indoor-Air-Quality'], ['97', 'Commissioning'], ['98', 'Lessons-Learned']]
+    }
+  },
+  operations: {
+    fr: {
+      '0x — Gestion de projet': 'pm',
+      '1x — Périmètre & Stratégie programme': 'scope',
+      '2x — Procure-to-Pay (P2P)': 'p2p',
+      '3x — Réception, Stockage & Inventaire (EWM)': 'inbound',
+      '4x — Réapprovisionnement, Sortie & Expédition': 'outbound',
+      '5x — Forecast to Stock (F2S)': 'f2s',
+      '6x — Order-to-Cash (O2C)': 'o2c',
+      '7x — Finance (FI-CO)': 'fin',
+      '8x — Master Data Management (MDM)': 'mdm',
+      '9x — Migration de données & Tests d\'intégration': 'mig',
+      'Ax — Autorisations & Sécurité': 'auth',
+      'Cx — Bascule & Go-Live': 'cutover'
+    },
+    en: {
+      '0x — Project Management': 'pm',
+      '1x — Programme Scope & Strategy': 'scope',
+      '2x — Procure-to-Pay (P2P)': 'p2p',
+      '3x — Inbound, Receiving & Inventory (EWM)': 'inbound',
+      '4x — Replenish, Outbound & Shipping': 'outbound',
+      '5x — Forecast to Stock (F2S)': 'f2s',
+      '6x — Order-to-Cash (O2C)': 'o2c',
+      '7x — Finance (FI-CO)': 'fin',
+      '8x — Master Data Management (MDM)': 'mdm',
+      '9x — Data Migration & Integration Tests': 'mig',
+      'Ax — Authorization & Security': 'auth',
+      'Cx — Cutover & Go-Live': 'cutover'
+    },
+    subs: {
+      pm: [['01', 'Project-Charter'], ['02', 'Planning-Milestones'], ['03', 'RAID-Log'], ['04', 'Status-Reporting'], ['05', 'Budget-Tracking'], ['06', 'Coordination-and-Steering-Meetings'], ['07', 'Change-Requests']],
+      scope: [['11', 'Processes-Scope'], ['12', 'Organizational-Structures'], ['13', 'Blueprint-Decisions'], ['14', 'IT-Technical-Architecture'], ['15', 'Integration-Strategy'], ['16', 'Cutover-Strategy'], ['17', 'Training-Strategy']],
+      p2p: [['21', 'Procure-to-Pay-Process'], ['22', 'Procure-to-Pay-Config'], ['23', 'Procure-to-Pay-Testing'], ['24', 'Supplier-Portal-EDI']],
+      inbound: [['31', 'Inbound-Receiving-Inventory-Process'], ['32', 'Inbound-Receiving-Inventory-Config'], ['33', 'Inbound-Receiving-Inventory-Testing'], ['34', 'Putaway-Rules-Strategy'], ['35', 'Location-Management'], ['36', 'Inventory-Counts-Adjustments'], ['37', 'Replenishment'], ['38', 'Cross-Docking']],
+      outbound: [['41', 'Replenish-Outbound-Shipping-Process'], ['42', 'Replenish-Outbound-Shipping-Config'], ['43', 'Replenish-Outbound-Shipping-Testing'], ['44', 'Shipping-Carrier-Integration'], ['45', 'Proof-of-Delivery'], ['46', 'Returns-Customer-Management']],
+      f2s: [['51', 'Forecast-To-Stock-Process'], ['52', 'Forecast-To-Stock-Config'], ['53', 'Forecast-To-Stock-Testing'], ['54', 'Supply-Planning-MRP'], ['55', 'Operations-Scheduling'], ['56', 'Capacity-Planning'], ['57', 'SOP-Process']],
+      o2c: [['61', 'Order-to-Cash-Process'], ['62', 'Order-to-Cash-Config'], ['63', 'Order-to-Cash-Testing'], ['64', 'Sales-Orders-Management'], ['65', 'Billing-Collections'], ['66', 'Returns-Management-ARMs']],
+      fin: [['71', 'Finance-General-Ledger'], ['72', 'Accounts-Payable'], ['73', 'Accounts-Receivable'], ['74', 'Cost-Controlling'], ['75', 'Asset-Management'], ['76', 'Financial-Reporting'], ['77', 'Finance-Config'], ['78', 'Finance-Testing']],
+      mdm: [['81', 'Master-Data-Strategy'], ['82', 'Material-Master'], ['83', 'Vendor-Master'], ['84', 'Customer-Master'], ['85', 'Chart-of-Accounts'], ['86', 'Cost-Centers-Profit-Centers'], ['87', 'Plant-Storage-Location-Structure'], ['88', 'Warehouse-Structure-WMS'], ['89', 'UOM-Conversion-Rules']],
+      mig: [['91', 'Batch-Serial-Number-Management'], ['92', 'Master-Data-Governance'], ['93', 'Master-Data-Quality-KPIs'], ['94', 'Migration-Objects-Mapping-Rules'], ['95', 'Mock-Migration-UAT-Scripts-Results'], ['96', 'Production-Load-SIT-Scripts-Results'], ['97', 'Performance-Regression-Testing']],
+      auth: [['A1', 'Authorization-Strategy'], ['A2', 'Role-Design-SAP'], ['A3', 'Role-Design-WMS'], ['A4', 'Segregation-of-Duties-Matrix'], ['A5', 'User-Provisioning-Process'], ['A6', 'Privileged-Access-Firefighter'], ['A7', 'Audit-Trail-Compliance'], ['A8', 'Authorization-Testing']],
+      cutover: [['C1', 'Cutover-Plan'], ['C2', 'Go-No-Go-Criteria'], ['C3', 'Hypercare-Log'], ['C4', 'Post-Go-Live-Review'], ['C5', 'Lessons-Learned']]
+    }
+  },
+  relocation: {
+    fr: {
+      '0x — Gestion de projet': 'pm',
+      '1x — Inventaire des actifs': 'asset',
+      '2x — Planification de la relocalisation': 'plan',
+      '3x — Transport & Logistique': 'logi',
+      '4x — HSE & Réglementaire': 'hse',
+      '5x — Personnes & RH': 'hr',
+      '6x — Acceptation du site cible': 'accept',
+      '7x — Fermeture du site historique': 'closeout'
+    },
+    en: {
+      '0x — Project Management': 'pm',
+      '1x — Asset Inventory': 'asset',
+      '2x — Relocation Planning': 'plan',
+      '3x — Transport & Logistics': 'logi',
+      '4x — HSE & Regulatory': 'hse',
+      '5x — People & HR': 'hr',
+      '6x — Target Site Acceptance': 'accept',
+      '7x — Legacy Site Closeout': 'closeout'
+    },
+    subs: {
+      pm: [['01', 'Project-Charter'], ['02', 'Planning-Milestones'], ['03', 'RAID-Log'], ['04', 'Status-Reporting'], ['05', 'Budget-Tracking'], ['06', 'Steering-Committee'], ['07', 'Change-Requests']],
+      asset: [['11', 'Inventory-Stock'], ['12', 'Equipment-Machinery'], ['13', 'IT-Assets'], ['14', 'Furniture-Fittings']],
+      plan: [['21', 'Relocation-Master-Plan'], ['22', 'Wave-Sequencing'], ['23', 'Target-Layout-Plans'], ['24', 'Parallel-Run-Plan'], ['25', 'Business-Continuity']],
+      logi: [['31', 'Transport-Contracts'], ['32', 'Handling-Contractors'], ['33', 'Insurance-Relocation'], ['34', 'Dangerous-Goods-Handling']],
+      hse: [['41', 'HSE-Relocation'], ['42', 'Regulatory-Constraints'], ['43', 'Security-During-Move']],
+      hr: [['51', 'People-Relocation-Plan'], ['52', 'HR-Positions-Changes'], ['53', 'Social-Communication'], ['54', 'Shuttle-Logistics']],
+      accept: [['61', 'Site-Target-Acceptance'], ['62', 'Equipment-Recommissioning'], ['63', 'Stock-Reconciliation']],
+      closeout: [['71', 'Source-Site-Handover'], ['72', 'Source-Site-Decommissioning'], ['73', 'Source-Site-Closeout'], ['74', 'Lessons-Learned']]
+    }
+  },
+  governance: {
+    fr: {
+      '0x — Fondations': 'foundation',
+      '1x — Planification intégrée': 'planning',
+      '2x — RAID & Décisions': 'raid',
+      '3x — Reporting & KPIs': 'reporting',
+      '4x — Budget & Contrôle des coûts': 'budget',
+      '5x — Communication & Conduite du changement': 'comms',
+      '6x — Achats & Contrats': 'procurement',
+      '7x — Interfaces inter-poles': 'interfaces',
+      '8x — Retours d\'expérience': 'lessons'
+    },
+    en: {
+      '0x — Foundation': 'foundation',
+      '1x — Integrated Planning': 'planning',
+      '2x — RAID & Decisions': 'raid',
+      '3x — Reporting & KPIs': 'reporting',
+      '4x — Budget & Cost Control': 'budget',
+      '5x — Comms & Change': 'comms',
+      '6x — Procurement & Contracts': 'procurement',
+      '7x — Inter-Pole Interfaces': 'interfaces',
+      '8x — Lessons Learned': 'lessons'
+    },
+    subs: {
+      foundation: [['01', 'Programme-Vision'], ['02', 'Program-Playbook-Onboarding'], ['03', 'Governance-Framework']],
+      planning: [['11', 'POP-Plan-On-a-Page'], ['12', 'Milestones-Master-Schedule'], ['13', 'Inter-Pole-Dependencies'], ['14', 'Critical-Path']],
+      raid: [['21', 'Programme-RAID-Log'], ['22', 'Decision-Log'], ['23', 'Change-Requests-Escalation-Process'], ['24', 'Issue-Resolution']],
+      reporting: [['31', 'Weekly-Updates'], ['32', 'OBEYA-KPIs'], ['33', 'Steering-Committee-Packs'], ['34', 'Executive-Reporting']],
+      budget: [['41', 'Budget-Baseline'], ['42', 'Cost-Tracking'], ['43', 'Forecast-EAC'], ['44', 'Change-Control-Budget']],
+      comms: [['51', 'Communication-Plan'], ['52', 'Stakeholder-Map'], ['53', 'Change-Management-Plan'], ['54', 'Training-Master-Plan'], ['55', 'Resistance-Management']],
+      procurement: [['61', 'Contracts-Register'], ['62', 'Vendor-Management'], ['63', 'SLA-KPI-Contracts'], ['64', 'Procurement-Log']],
+      interfaces: [['71', 'Inter-Pole-Interface-Register'], ['72', 'AF-to-AO-Handover-Criteria'], ['73', 'BF-to-BO-Handover-Criteria'], ['74', 'AF-to-AR-Handover-Criteria'], ['75', 'BF-to-BR-Handover-Criteria'], ['76', 'Milestone-Acceptance-Process']],
+      lessons: [['81', 'Programme-Lessons-Learned'], ['82', 'Standards-Continuous-Improvement']]
+    }
+  }
+};
+
+// Helper: get domains object for current lang and given pole-type
+function getDomains(poleType) {
+  const block = DOMAINS[poleType];
+  const labels = block[LANG] || block.fr;
+  const result = {};
+  Object.entries(labels).forEach(([label, key]) => { result[label] = block.subs[key]; });
+  return result;
+}
+
+// Find domain & subfolder for a given pole + subCode (lang-aware)
+function findDomainForSub(poleType, subCode) {
+  const block = DOMAINS[poleType];
+  const labels = block[LANG] || block.fr;
+  for (const label in labels) {
+    const key = labels[label];
+    const hit = block.subs[key].find(([c]) => c === subCode);
+    if (hit) return { domain: label, name: hit[1] };
+  }
+  return null;
+}
+
+// ============ HELPERS ============
+function $(sel) { return document.querySelector(sel); }
+function el(tag, attrs={}, children=[]) {
+  const e = document.createElement(tag);
+  for (const k in attrs) {
+    if (k === 'class') e.className = attrs[k];
+    else if (k === 'html') e.innerHTML = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  }
+  (Array.isArray(children) ? children : [children]).forEach(c => {
+    if (c == null) return;
+    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  });
+  return e;
+}
+function kebab(str) {
+  return (str || '')
+    .normalize('NFKD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-zA-Z0-9\s-]/g, ' ')
+    .trim()
+    .split(/[\s_]+/).filter(Boolean)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join('-');
+}
+
+// ============ APPLY TRANSLATIONS ============
+function applyI18n() {
+  document.documentElement.lang = LANG;
+  const tr = t();
+  document.querySelectorAll('[data-i18n]').forEach(node => {
+    const key = node.getAttribute('data-i18n');
+    if (tr[key]) node.textContent = tr[key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(node => {
+    const key = node.getAttribute('data-i18n-html');
+    if (tr[key]) node.innerHTML = tr[key];
+  });
+  document.querySelectorAll('[data-i18n-attr]').forEach(node => {
+    const [attr, key] = node.getAttribute('data-i18n-attr').split('|');
+    if (tr[key]) node.setAttribute(attr, tr[key]);
+  });
+  // language buttons
+  document.querySelectorAll('.lang-switch button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === LANG);
+  });
+  // populate selects
+  populatePoleSelects();
+  populateStatusSelect();
+  // re-run dependent UIs
+  cascadeFromPole(true);
+  renderHistory();
+  renderRef();
+  updatePreview();
+}
+
+function populatePoleSelects() {
+  const tr = t();
+  [gPole, rPole].forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = '';
+    if (sel === gPole) {
+      const opt = document.createElement('option');
+      opt.value = ''; opt.textContent = tr.selectPlaceholder;
+      sel.appendChild(opt);
+    }
+    Object.entries(POLES).forEach(([k, v]) => {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = tr.poleLabel(k, v);
+      sel.appendChild(opt);
+    });
+    if (current) sel.value = current;
+  });
+}
+
+function populateStatusSelect() {
+  const tr = t();
+  const current = gStatus.value || 'IFR';
+  gStatus.innerHTML = '';
+  Object.keys(tr.statusLabels).forEach(k => {
+    const o = document.createElement('option');
+    o.value = k; o.textContent = tr.statusLabels[k];
+    gStatus.appendChild(o);
+  });
+  gStatus.value = current;
+}
+
+// ============ TABS ============
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+// ============ LANG SWITCH ============
+document.querySelectorAll('.lang-switch button').forEach(b => {
+  b.addEventListener('click', () => {
+    LANG = b.dataset.lang;
+    localStorage.setItem('wcpdc_lang', LANG);
+    applyI18n();
+  });
+});
+
+// ============ GENERATOR ============
+const gPole = $('#g-pole');
+const gDomain = $('#g-domain');
+const gSub = $('#g-sub');
+const gDoc = $('#g-docnum');
+const gName = $('#g-name');
+const gStatus = $('#g-status');
+const gVersion = $('#g-version');
+const gPreviewBox = $('#g-preview-box');
+const gPreview = $('#g-preview');
+const gDecode = $('#g-decode');
+const gCopy = $('#g-copy');
+const gSave = $('#g-save');
+
+gPole.addEventListener('change', () => cascadeFromPole(false));
+gDomain.addEventListener('change', () => cascadeFromDomain(false));
+
+function cascadeFromPole(preserve) {
+  const tr = t();
+  const code = gPole.value;
+  const prevDom = gDomain.value;
+  gDomain.innerHTML = `<option value="">${tr.selectPlaceholder}</option>`;
+  if (!code) {
+    gDomain.disabled = true;
+    gSub.innerHTML = `<option value="">—</option>`;
+    gSub.disabled = true;
+    updatePreview();
+    return;
+  }
+  const t_ = POLES[code].type;
+  const domains = getDomains(t_);
+  Object.keys(domains).forEach(d => {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    gDomain.appendChild(o);
+  });
+  gDomain.disabled = false;
+  gPreviewBox.style.setProperty('--pole-color', POLES[code].color);
+  // try to preserve domain by index when relanguage
+  if (preserve && prevDom) {
+    // if exact match exists, keep it; else try to find index in previous lang
+    if (domains[prevDom]) gDomain.value = prevDom;
+    else {
+      // Search across all langs for the matching key, then map to current lang
+      const block = DOMAINS[t_];
+      let foundKey = null;
+      for (const lang of ['fr','en']) {
+        if (block[lang][prevDom]) { foundKey = block[lang][prevDom]; break; }
+      }
+      if (foundKey) {
+        const labels = block[LANG] || block.fr;
+        for (const label in labels) if (labels[label] === foundKey) { gDomain.value = label; break; }
+      }
+    }
+  }
+  cascadeFromDomain(preserve);
+}
+
+function cascadeFromDomain(preserve) {
+  const tr = t();
+  const pole = gPole.value;
+  const dom = gDomain.value;
+  const prevSub = gSub.value;
+  gSub.innerHTML = `<option value="">${tr.selectPlaceholder}</option>`;
+  if (!pole || !dom) { gSub.disabled = true; updatePreview(); return; }
+  const t_ = POLES[pole].type;
+  const domains = getDomains(t_);
+  (domains[dom] || []).forEach(([code, name]) => {
+    const o = document.createElement('option');
+    o.value = code + '|' + name;
+    o.textContent = `${code}_${name}`;
+    gSub.appendChild(o);
+  });
+  gSub.disabled = false;
+  if (preserve && prevSub) {
+    const opt = Array.from(gSub.options).find(o => o.value === prevSub);
+    if (opt) gSub.value = prevSub;
+  }
+  updatePreview();
+}
+
+[gSub, gDoc, gName, gStatus, gVersion].forEach(e => e.addEventListener('input', updatePreview));
+
+function buildName() {
+  const pole = gPole.value;
+  const sub = gSub.value;
+  const docnum = gDoc.value.trim();
+  const name = kebab(gName.value);
+  const status = gStatus.value;
+  const version = gVersion.value.trim();
+
+  if (!pole || !sub || !name || !version) return null;
+  const [subCode] = sub.split('|');
+  const verOk = /^\d+\.\d+$/.test(version);
+  if (!verOk) return null;
+  const docOk = !docnum || /^\d{5}$/.test(docnum);
+  if (!docOk) return null;
+
+  const parts = [];
+  parts.push(`${pole}${subCode}`);
+  if (docnum) parts.push(`[${docnum}]`);
+  parts.push(name);
+  parts.push(status);
+  parts.push(`v${version}`);
+  return { full: parts.join('_'), pole, subCode, docnum, name, status, version };
+}
+
+function updatePreview() {
+  const tr = t();
+  const data = buildName();
+  if (!data) {
+    gPreview.innerHTML = `<span style="color:#aaa;">${tr.fillRequired}</span>`;
+    gDecode.innerHTML = '';
+    gCopy.disabled = true;
+    gSave.disabled = true;
+    return;
+  }
+  const segs = [
+    `<span class="seg pole">${data.pole}${data.subCode}</span>`,
+    data.docnum ? `<span class="seg docnum">_[${data.docnum}]</span>` : '',
+    `<span class="seg name">_${data.name}</span>`,
+    `<span class="seg status">_${data.status}</span>`,
+    `<span class="seg ver">_v${data.version}</span>`
+  ].join('');
+  gPreview.innerHTML = segs;
+
+  const p = POLES[data.pole];
+  const poleLabel = LANG === 'fr' ? p.labelFR : p.labelEN;
+  gDecode.innerHTML = '';
+  gDecode.style.setProperty('--pole-color', p.color);
+  gDecode.appendChild(buildCell(tr.decode.pole, data.pole, `${p.site} · ${poleLabel}`));
+  gDecode.appendChild(buildCell(tr.decode.subfolder, data.subCode, gSub.options[gSub.selectedIndex].textContent));
+  if (data.docnum) gDecode.appendChild(buildCell(tr.decode.docnum, data.docnum, tr.pole5digits));
+  gDecode.appendChild(buildCell(tr.decode.title, data.name, ''));
+  gDecode.appendChild(buildCell(tr.decode.status, data.status, tr.statusDescriptions[data.status]));
+  gDecode.appendChild(buildCell(tr.decode.version, `v${data.version}`, 'Major.Minor'));
+
+  gCopy.disabled = false;
+  gSave.disabled = false;
+}
+
+function buildCell(k, v, desc) {
+  return el('div', { class: 'cell' }, [
+    el('div', { class: 'k' }, k),
+    el('div', { class: 'v' }, v),
+    el('div', { class: 'desc' }, desc)
+  ]);
+}
+
+gCopy.addEventListener('click', () => {
+  const d = buildName(); if (!d) return;
+  const tr = t();
+  navigator.clipboard.writeText(d.full).then(() => {
+    gCopy.textContent = tr.btnCopied;
+    gCopy.classList.add('copied');
+    setTimeout(() => { gCopy.textContent = tr.btnCopy; gCopy.classList.remove('copied'); }, 1500);
+  });
+});
+
+gSave.addEventListener('click', () => {
+  const d = buildName(); if (!d) return;
+  const list = JSON.parse(localStorage.getItem('wcpdc_history') || '[]');
+  list.unshift({ name: d.full, ts: Date.now() });
+  localStorage.setItem('wcpdc_history', JSON.stringify(list.slice(0, 30)));
+  renderHistory();
+});
+
+$('#g-reset').addEventListener('click', () => {
+  gPole.value = '';
+  cascadeFromPole(false);
+  gDoc.value = ''; gName.value = ''; gStatus.value = 'IFR'; gVersion.value = '1.0';
+  updatePreview();
+});
+
+function renderHistory() {
+  const tr = t();
+  const list = JSON.parse(localStorage.getItem('wcpdc_history') || '[]');
+  const container = $('#g-history');
+  if (!list.length) { container.innerHTML = `<div class="sub">${tr.historyEmpty}</div>`; return; }
+  container.innerHTML = '';
+  list.forEach((item, idx) => {
+    const row = el('div', { class: 'hist-item' });
+    row.appendChild(el('span', {}, item.name));
+    const right = el('span');
+    const copyBtn = el('button', { class: 'del', title: tr.btnCopy }, '⧉');
+    copyBtn.addEventListener('click', e => { e.stopPropagation(); navigator.clipboard.writeText(item.name); });
+    const delBtn = el('button', { class: 'del', title: '×' }, '×');
+    delBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      list.splice(idx, 1);
+      localStorage.setItem('wcpdc_history', JSON.stringify(list));
+      renderHistory();
+    });
+    right.appendChild(copyBtn);
+    right.appendChild(delBtn);
+    row.appendChild(right);
+    row.addEventListener('click', () => navigator.clipboard.writeText(item.name));
+    container.appendChild(row);
+  });
+}
+
+// ============ VALIDATOR ============
+const FILENAME_RE = /^([A-Z]{2})([0-9A-C][0-9A-C0-9])(?:_\[(\d{5})\])?_([A-Za-z0-9-]+)_(DRAFT|WIP|IFR|IFA|IFC|AB)_v(\d+\.\d+)(?:\.[a-zA-Z0-9]+)?$/;
+
+$('#v-check').addEventListener('click', validate);
+$('#v-input').addEventListener('keydown', e => { if (e.key === 'Enter') validate(); });
+$('#v-example').addEventListener('click', () => {
+  $('#v-input').value = 'AO43_[31014]_Steering-Committee-Pack_IFA_v2.5.pdf';
+  validate();
+});
+
+function validate() {
+  const tr = t();
+  const v = $('#v-input').value.trim();
+  const out = $('#v-result');
+  out.innerHTML = '';
+  if (!v) return;
+
+  const errors = [];
+  const m = v.match(FILENAME_RE);
+
+  if (!m) {
+    errors.push(tr.errPattern);
+    if (!/^[A-Z]{2}/.test(v)) errors.push(tr.errStart);
+    if (!/_v\d+\.\d+/.test(v)) errors.push(tr.errVersion);
+    if (!/_(DRAFT|WIP|IFR|IFA|IFC|AB)_/.test(v)) errors.push(tr.errStatus);
+    if (/\s/.test(v)) errors.push(tr.errSpaces);
+    out.innerHTML = `<div class="val-result ko"><h4>${tr.valKoPattern}</h4><ul>${errors.map(e => '<li>' + e + '</li>').join('')}</ul></div>`;
+    return;
+  }
+
+  const [, pole, subCode, docnum, name, status, version] = m;
+  if (!POLES[pole]) errors.push(tr.errPole(pole));
+  else {
+    const found = findDomainForSub(POLES[pole].type, subCode);
+    if (!found) errors.push(tr.errSub(subCode, pole));
+  }
+
+  if (errors.length) {
+    out.innerHTML = `<div class="val-result ko"><h4>${tr.valKoSemantic}</h4><ul>${errors.map(e => '<li>' + e + '</li>').join('')}</ul></div>`;
+    return;
+  }
+
+  const found = findDomainForSub(POLES[pole].type, subCode);
+  const p = POLES[pole];
+  const poleLabel = LANG === 'fr' ? p.labelFR : p.labelEN;
+  out.innerHTML = `
+    <div class="val-result ok">
+      <h4>${tr.valOk}</h4>
+      <div class="decode">
+        <div class="cell"><div class="k">${tr.decode.pole}</div><div class="v">${pole}</div><div class="desc">${p.site} · ${poleLabel}</div></div>
+        <div class="cell"><div class="k">${tr.decode.domain}</div><div class="v">${found.domain}</div><div class="desc">${subCode}_${found.name}</div></div>
+        ${docnum ? `<div class="cell"><div class="k">${tr.decode.docnum}</div><div class="v">${docnum}</div><div class="desc">${tr.pole5digits}</div></div>` : ''}
+        <div class="cell"><div class="k">${tr.decode.title}</div><div class="v">${name}</div><div class="desc">${name.split('-').join(' ')}</div></div>
+        <div class="cell"><div class="k">${tr.decode.status}</div><div class="v">${status}</div><div class="desc">${tr.statusDescriptions[status]}</div></div>
+        <div class="cell"><div class="k">${tr.decode.version}</div><div class="v">v${version}</div><div class="desc">Major.Minor</div></div>
+      </div>
+    </div>`;
+}
+
+// ============ REFERENCE ============
+const rPole = $('#r-pole');
+rPole.addEventListener('change', renderRef);
+function renderRef() {
+  if (!rPole.value) rPole.value = 'AF';
+  const code = rPole.value;
+  const t_ = POLES[code].type;
+  const tree = $('#r-tree');
+  tree.innerHTML = '';
+  const domains = getDomains(t_);
+  const poleColor = POLES[code].color;
+  Object.entries(domains).forEach(([dom, subs]) => {
+    const block = el('div', { class: 'ref-block', style: `--pole-color: ${poleColor};` });
+    block.appendChild(el('h4', { style: `color: ${poleColor};` }, dom));
+    const grid = el('div', { class: 'ref-grid' });
+    subs.forEach(([c, n]) => grid.appendChild(el('div', {}, `${code}${c}_${n}`)));
+    block.appendChild(grid);
+    tree.appendChild(block);
+  });
+}
+
+// ============ INIT ============
+applyI18n();
+</script>
+</body>
+</html>
